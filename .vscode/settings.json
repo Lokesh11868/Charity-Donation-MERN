@@ -1,0 +1,7 @@
+{
+    "search.mode": "view",
+    "search.quickAccess.preserveInput": true,
+    "search.quickOpen.includeSymbols": true,
+    "search.seedOnFocus": false,
+    "search.showLineNumbers": false
+}
