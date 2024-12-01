@@ -4,9 +4,9 @@
   "description": "crowdfunding",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-     "start": "cd backend && node index.js"
-  },
+  "start": "concurrently \"cd frontend && npm start\" \"cd backend && node index.js\"",
+  "test": "echo \"Error: no test specified\" && exit 1"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Lokesh11868/Charity-Donation.git"
@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Lokesh11868/Charity-Donation/issues"
   },
-  "homepage": "https://github.com/Lokesh11868/Charity-Donation#readme"
+  "homepage": "https://github.com/Lokesh11868/Charity-Donation#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
 }

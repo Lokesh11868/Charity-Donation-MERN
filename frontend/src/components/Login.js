@@ -28,7 +28,6 @@ function Login(props) {
      if (data.result === false) {
      return <Redirect to="/login" />;
     }
-
  }, [data]);
 
 

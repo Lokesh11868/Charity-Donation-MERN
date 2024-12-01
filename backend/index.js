@@ -78,6 +78,37 @@ app.get("/admin", async (req, res) => {
   }
 });
 
+
+const contactSchema = {
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  phone: { type: String, required: true },
+  message: { type: String, required: true },
+};
+
+const Contact = mongoose.model("Contact", contactSchema);
+
+// Route for handling contact form submissions
+app.post("/contact", async (req, res) => {
+  try {
+    const { name, email, phone, message } = req.body;
+    
+    if (!name || !email || !phone || !message) {
+      return res.status(400).send("All fields are required.");
+    }
+
+    const newContact = new Contact({ name, email, phone, message });
+    await newContact.save();
+
+    res.status(201).send("Query submitted successfully!");
+  } catch (err) {
+    console.error(err);
+    console.error("Error occurred while submitting query:", err);
+    res.status(500).send("Error occurred while submitting query. Please try again.");
+  }
+});
+
+
 // Login Schema
 const loginSchema = {
   email: String,
