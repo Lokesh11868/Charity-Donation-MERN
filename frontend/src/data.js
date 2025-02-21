@@ -17,13 +17,13 @@ const data = [
     {
         key: 3,
         title: "Gift a New Year Dream",
-        content: "Make a child's new year awesome Be the Change you want to see",
+        content: "Make a child's New Year awesome by being the change you want to see, ensuring they have a brighter, happier future.",
         amount: 3000,
     },
     {
         key: 4,
         title: "Cycle for Survival",
-        content: "P2P Fundraiser for Memorial Sloan Kettering Cancer Center",
+        content: "Support the P2P Fundraiser for Memorial Sloan Kettering to advance cancer research and patient care.",
         amount: 2000,
     },
 ];

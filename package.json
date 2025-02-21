@@ -4,9 +4,9 @@
   "description": "crowdfunding",
   "main": "index.js",
   "scripts": {
-  "start": "concurrently \"cd frontend && npm start\" \"cd backend && node index.js\"",
-  "test": "echo \"Error: no test specified\" && exit 1"
-},
+    "start": "concurrently \"cd frontend && npm start\" \"cd backend && node index.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Lokesh11868/Charity-Donation.git"
@@ -19,5 +19,8 @@
   "homepage": "https://github.com/Lokesh11868/Charity-Donation#readme",
   "devDependencies": {
     "concurrently": "^9.1.0"
+  },
+  "dependencies": {
+    "razorpay": "^2.9.5"
   }
 }

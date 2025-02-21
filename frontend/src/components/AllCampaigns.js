@@ -1,79 +1,59 @@
-import React, { useState, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import axios from "axios";
-import data from "../data";
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+//import './AllCampaigns.css';
 
-function AllCampaigns() {
-  const [campdata, setcampdata] = useState(data);
+function AllCampaigns({ campdata = [] }) {
   const history = useHistory();
 
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:4000/admin")
-  //     .then((res) => {
-  //       setcampdata(res.campdata);
-  //     })
-  //     .catch(function (error) {
-  //       console.log(error);
-  //     });
-  // }, []);
-
-  //cards campdata
-  console.log(campdata);
+  const handleDonateClick = (campaign) => {
+    history.push({
+      pathname: '/paymentform',
+      state: {
+        title: campaign.title,
+        content: campaign.content,
+      },
+    });
+  };
 
   return (
-    <div>
-      <h1 className="AllCampaigns-Title">
-        <b>CAMPAIGNS</b>
-      </h1>
+    <div className="all-campaigns-container">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1 className="AllCampaigns-Title">
+          <b>CAMPAIGNS</b>
+        </h1>
+      </div>
 
       <section className="AllCampaigns-Card">
-        {campdata.map((info, index) => (
-          <div
-            id="campaigns"
-            className="twocolor-campaign AllCampaigns-content"
-          >
-            <img
-              className="campaign-img"
-              src={require("../images/donation.jpg").default}
-              alt="logo"
-            />
-
-            <div>
-              <div className="campaign-info">
-                <h3>
-                  <b>{info.title}</b>
-                </h3>
-
-                <p>{info.content}</p>
-              </div>
-
-              <div className="AllCampaigns-amount-button ">
-                <div className="campaign-amount">
-                  <b>REQUIRED AMOUNT:Rs.{info.amount}</b>
+        {campdata.length === 0 ? (
+          <p>No campaigns available at the moment.</p>
+        ) : (
+          campdata.map((info, index) => (
+            <div
+              id="campaigns"
+              className="twocolor-campaign AllCampaigns-content"
+              key={index}
+            >
+              <img
+                className="campaign-img"
+                src={info.image || require("../images/donation.jpg").default}
+              />
+              <div>
+                <div className="campaign-info">
+                  <h3>
+                    <b>{info.title}</b>
+                  </h3>
+                  <p>{info.content}</p>
+                  <div className="campaign-footer">
+                    <span>Required Amount: {info.amount}</span>
+                    <button className="donate-button" onClick={() => handleDonateClick(info)}>
+                      DONATE
+                    </button>
+                  </div>
                 </div>
-
-                <button
-                  type="button"
-                  class="btn btn-success btn-lg"
-                  onClick={() => {
-                    history.push({
-                      pathname: "/card",
-                      state: {
-                        // location state
-                        title: info.title,
-                        content: info.content,
-                        amount: info.amount,
-                      },
-                    });
-                  }}
-                >
-                  DONATE
-                </button>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </section>
     </div>
   );

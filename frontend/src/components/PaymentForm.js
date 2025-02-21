@@ -1,112 +1,93 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useLocation } from 'react-router-dom';
-
-function PaymentForm() {
-
-  const location = useLocation();
+import { useState } from 'react'
+import axios from "axios"
+import {load} from '@cashfreepayments/cashfree-js'
 
 
-   const [note, setNote] = useState({
-     name: "",
-     email: "",
-   phone:"",
-     amount:""
-   });
+function App() {
 
- function handleChange(event) {
-     const { name, value } = event.target;
+  let cashfree;
 
-     setNote(prevNote => {
-      return {
-        ...prevNote,
-         [name]: value
-       };
-     });
-   }
+  let insitialzeSDK = async function () {
 
-   function submitData(event) {
-     event.preventDefault();
-    
-     note.title=location.state.title;
-     note.content=location.state.content;
+    cashfree = await load({
+      mode: "sandbox",
+    })
+  }
 
-     axios
-       .post("http://localhost:4000/paynow", note)
-       .then((res) => console.log(res.data))
-      .catch((error) => console.log(error));
-    
-    
-     setNote({
-         name: "",
-         email: "",
-         phone:"",
-         amount:""
-     });
-   }
+  insitialzeSDK()
 
+  const [orderId, setOrderId] = useState("")
+
+
+
+  const getSessionId = async () => {
+    try {
+      let res = await axios.get("http://localhost:4000/payment")
+      
+      if(res.data && res.data.payment_session_id){
+
+        console.log(res.data)
+        setOrderId(res.data.order_id)
+        return res.data.payment_session_id
+      }
+
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const verifyPayment = async () => {
+    try {
+      
+      let res = await axios.post("http://localhost:4000/verify", {
+        orderId: orderId
+      })
+
+      if(res && res.data){
+        alert("payment verified")
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleClick = async (e) => {
+    e.preventDefault()
+    try {
+
+      let sessionId = await getSessionId()
+      let checkoutOptions = {
+        paymentSessionId : sessionId,
+        redirectTarget:"_modal",
+      }
+
+      cashfree.checkout(checkoutOptions).then((res) => {
+        console.log("payment initialized")
+
+        verifyPayment(orderId)
+      })
+
+
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
   return (
-    <div className="payment-form">
+    <>
 
-      <h1>DONATION FORM</h1>
+      <h1>Cashfree payment getway</h1>
+      <div className="card">
+        <button onClick={handleClick}>
+          Pay now
+        </button>
 
-      <form method="POST" action="http://localhost:4000/paynow">
-        <input
-          name="name"
-           onChange={handleChange}
-           value={note.name}
-          placeholder="Name"
-          type="text"
-        />
-        
-        <input
-          name="email"
-           onChange={handleChange}
-           value={note.email}
-          placeholder="Email"
-          type="text"
-        />
+      </div>
 
-        <input
-          name="phone"
-           onChange={handleChange}
-           value={note.phone}
-          placeholder="Phone"
-          type="text"
-        />
-
-        <input
-          name="amount"
-           onChange={handleChange}
-           value={note.amount}
-          placeholder="Amount"
-          type="text"
-        />
-
-        
-        <input
-          //type="hidden"
-          name="title"
-           onChange={handleChange}
-          value={location.state.title}
-           placeholder="Amount"
-           type="text"
-        />
-
-        
-        <input
-          //type="hidden"
-          name="content"
-           onChange={handleChange}
-          value={location.state.content}
-           placeholder="Amount"
-           type="text"
-        />
-        <button type="submit">Pay</button>
-        {/* <button onClick={submitData}>Pay</button> */}
-      </form>
-    </div>
-  );
+    </>
+  )
 }
 
-export default PaymentForm;
+export default App

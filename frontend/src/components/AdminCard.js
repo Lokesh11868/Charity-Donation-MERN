@@ -7,19 +7,6 @@ function AdminCard(props) {
 
   
     function handleDelete() {
-        // props.onDelete(props.id);
-        
-        // console.log("title");
-        // console.log(props.title);
-
-        // setDeletenote(() => {
-        //   return {
-        //     title:props.title,
-        //     content:props.content,
-        //     amount:props.amount
-        //   };
-        // })
-        
 
        let delnote={
           title:props.title,

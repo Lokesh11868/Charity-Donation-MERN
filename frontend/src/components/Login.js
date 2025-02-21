@@ -1,229 +1,111 @@
-import React, { useState, useEffect } from "react";
-import { Route, Redirect } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
-
-function Login(props) {
-  const [data, setData] = useState({});
-  const [credential, setCredential] = useState({
+function Login() {
+  const [loginType, setLoginType] = useState(""); // To determine login type (admin/user)
+  const [credentials, setCredentials] = useState({
     email: "",
     password: "",
   });
+  const [message, setMessage] = useState(""); // To display success/error messages
   const history = useHistory();
-  const [user, setUser] = useState()
-  useEffect(() => {
-     if (data.result === true) 
-     {
-       //set the state of the user
-     setUser(data)
-     //stoe the user in localStorage
-     localStorage.setItem('user',data)
-       return <Redirect to={{ pathname: "/admin", state: { loggedInStatus: data.result } }}/> 
-  //     // return   <Redirect  to= "/admin"/>
-  //     //   {/* <Redirect  to={{ pathname: "/admin", state: { loggedInStatus: data.result } }}/> */}
-      
-     }
-    
-     if (data.result === false) {
-     return <Redirect to="/login" />;
-    }
- }, [data]);
 
+  const adminCredentials = {
+    email: "vignesh05@123",
+    password: "vignesh123",
+  };
 
-  function handleChange(event) {
-    const { name, value } = event.target;
-
-    setCredential((prevCredential) => {
-      return {
-        ...prevCredential,
-        [name]: value,
-      };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials({
+      ...credentials,
+      [name]: value,
     });
-  }
+  };
 
-  function submitCredential(event) {
-    event.preventDefault();
+  const submitCredential = async (e) => {
+    e.preventDefault();
 
-  const response=axios
-      .post("http://localhost:4000/login", credential)
-      .then((res) => {
-        setData(res.data);
-        
-        console.log("local storage:",res.data)
-      })
-      .catch((error) => console.log(error));
+    if (loginType === "admin") {
+      // Admin login logic
+      if (
+        credentials.email === adminCredentials.email &&
+        credentials.password === adminCredentials.password
+      ) {
+        localStorage.setItem("user", JSON.stringify(credentials));
+        setMessage("Admin login successful!");
+        history.push("/admin"); // Redirect to admin page
+      } else {
+        setMessage("Invalid admin credentials.");
+      }
+    } else if (loginType === "user") {
+      // User login logic
+      try {
+        const response = await fetch("http://localhost:4000/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(credentials),
+        });
 
-    console.log("the credential");
-    console.log(credential);
+        const data = await response.json();
 
-    setCredential({
-      email: "",
-      password: "",
-    });
-  }
-
- 
-
-  useEffect(() => {
-
-    console.log("data insie useeffect",data);
-    
-    if (data.result === true) 
-    {
-      console.log(" if true data insie useeffect",data.result);
-      
-      //set the state of the user
-    // setUser(data)
-    //stoe the user in localStorage
-    localStorage.setItem('user',JSON.stringify(data))
-      // <Redirect to={{ pathname: "/admin", state: { loggedInStatus: data.result } }}/> 
-      // return   <Redirect  to= "/admin"/>
-      //   {/* <Redirect  to={{ pathname: "/admin", state: { loggedInStatus: data.result } }}/> */}
-
-
-
-      history.push({
-        pathname: '/admin',
-        state: {  // location state
-          loggedInStatus: data.result
-        },
-      }); 
-      
+        if (response.ok) {
+          localStorage.setItem("user", JSON.stringify(data.user)); // Assuming the response contains user data
+          setMessage("User login successful!");
+          history.push("/home"); // Redirect to homepage on successful login
+        } else {
+          setMessage(data.message || "Invalid login credentials.");
+        }
+      } catch (error) {
+        setMessage("An error occurred during login.");
+        console.error(error);
+      }
     }
-    
-    if (data.result === false) {
-      alert("Mr.Culprit,you need to take a break!");
-      // <Redirect to="/login" />;
+  };
 
-    }
-
-  }, [data]);
-
-
-  //check if user has previously logged in
-  useEffect(() => {
-   const loggedInUser = localStorage.getItem('user');
-    if (loggedInUser) {
-      const foundUser = JSON.parse(loggedInUser);
-      setUser(foundUser);
-    }
-  }, []);
   return (
-    <div className="Login-page">
-      {/* <h1>LOGIN</h1> */}
-      <form>
-        Email
-        <input
-          type="email"
-          name="email"
-          onChange={handleChange}
-          value={credential.email}
-        />
-        Password
-        <input
-          type="password"
-          name="password"
-          onChange={handleChange}
-          value={credential.password}
-        />
-        <button type="submit" onClick={submitCredential}>
-          Login
-        </button>
-      </form>
+    <div className="login-page">
+      <h1>Login</h1>
+      <div>
+        <button onClick={() => setLoginType("admin")}>Admin Login</button>
+        <button onClick={() => setLoginType("user")}>User Login</button>
+      </div >
 
+      {loginType && (
+        <p className="mentionlogin">{loginType === "admin" ? "Admin" : "User"}</p>
+      )}
+
+      {loginType && (
+        <form onSubmit={submitCredential}>
+          <div className="insidediv">
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={credentials.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="insidediv">
+            <label>Password:</label>
+            <input
+              type="password"
+              name="password"
+              value={credentials.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button type="submit">Login</button>
+        </form>
+      )}
+
+      {message && <p>{message}</p>}
     </div>
   );
-} 
-
+}
 
 export default Login;
-
-
-
-
-// import React, { useState, useEffect } from "react";
-// import { useHistory } from "react-router-dom";
-// import axios from "axios";
-
-// function Login(props) {
-//   const [credential, setCredential] = useState({
-//     email: "",
-//     password: "",
-//   });
-
-//   const [data, setData] = useState({});
-//   const [user, setUser] = useState(null);
-//   const history = useHistory();
-
-//   // Check if user is already logged in (from localStorage)
-//   useEffect(() => {
-//     const loggedInUser = localStorage.getItem('user');
-//     if (loggedInUser) {
-//       const foundUser = JSON.parse(loggedInUser);
-//       setUser(foundUser);
-//       history.push('/admin');  // Redirect to admin page
-//     }
-//   }, [history]);
-
-//   // Handle input changes
-//   function handleChange(event) {
-//     const { name, value } = event.target;
-//     setCredential((prevCredential) => ({
-//       ...prevCredential,
-//       [name]: value,
-//     }));
-//   }
-
-//   // Handle form submission (login)
-//   function submitCredential(event) {
-//     event.preventDefault();
-
-//     axios.post("http://localhost:4000/login", credential)
-//       .then((res) => {
-//         if (res.data.result === true) {
-//           localStorage.setItem('user', JSON.stringify(res.data));
-//           setData(res.data);
-//           history.push('/admin');  // Navigate to the admin page
-//         } else {
-//           alert("Invalid credentials. Please try again.");
-//         }
-//       })
-//       .catch((error) => {
-//         console.log(error);
-//         alert("An error occurred. Please try again.");
-//       });
-
-//     setCredential({
-//       email: "",
-//       password: "",
-//     });
-//   }
-
-//   return (
-//     <div className="Login-page">
-//       <form>
-//         <label>Email</label>
-//         <input
-//           type="email"
-//           name="email"
-//           onChange={handleChange}
-//           value={credential.email}
-//         />
-//         <label>Password</label>
-//         <input
-//           type="password"
-//           name="password"
-//           onChange={handleChange}
-//           value={credential.password}
-//         />
-//         <button type="submit" onClick={submitCredential}>
-//           Login
-//         </button>
-//       </form>
-//     </div>
-//   );
-// }
-
-// export default Login;
-

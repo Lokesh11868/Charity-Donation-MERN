@@ -5,17 +5,11 @@ import axios from "axios";
 function UpdateCampaign() {
     const location = useLocation();
     const history = useHistory();
-
-
     const [newdata, setNewdata] = useState({
         title: "",
         content: "",
          amount:""
       });
-    
-
-    
-
      function handleChange(event) {
         const { name, value } = event.target;
     

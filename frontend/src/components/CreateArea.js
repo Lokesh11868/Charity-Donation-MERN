@@ -1,32 +1,31 @@
 import React, { useState } from "react";
 
-function CreateArea(props) {
+function CreateArea({ onAdd }) {
   const [note, setNote] = useState({
     title: "",
     content: "",
-    amount:""
+    amount: "",
+    image: ""
   });
 
-  function handleChange(event) {
-    const { name, value } = event.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNote(prevNote => ({
+      ...prevNote,
+      [name]: value
+    }));
+  };
 
-    setNote(prevNote => {
-      return {
-        ...prevNote,
-        [name]: value
-      };
-    });
-  }
-
-  function submitNote(event) {
-    props.onAdd(note);
+  const submitNote = (e) => {
+    e.preventDefault();
+    onAdd(note);
     setNote({
       title: "",
       content: "",
-      amount:""
+      amount: "",
+      image: ""
     });
-    event.preventDefault();
-  }
+  };
 
   return (
     <div>
@@ -44,15 +43,19 @@ function CreateArea(props) {
           placeholder="Take a note..."
           rows="3"
         />
-
         <input
           name="amount"
           onChange={handleChange}
           value={note.amount}
           placeholder="Amount"
         />
-
-        <button  onClick={submitNote}>Add</button>
+        <input
+          name="image"
+          onChange={handleChange}
+          value={note.image}
+          placeholder="Image URL"
+        />
+        <button onClick={submitNote}>Add</button>
       </form>
     </div>
   );
